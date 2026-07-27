@@ -11,6 +11,7 @@ const checkInSchema = new mongoose.Schema(
     deviceId: {
       type: String,
       required: true,
+      trim: true,
     },
 
     platform: {
@@ -19,12 +20,23 @@ const checkInSchema = new mongoose.Schema(
       required: true,
     },
 
-    deviceName: String,
+    deviceName: {
+      type: String,
+      trim: true,
+    },
 
-    osVersion: String,
+    osVersion: {
+      type: String,
+      trim: true,
+    },
 
-    timezone: String,
+    // Date used to allow only one check-in per day
+    checkInDate: {
+      type: String,
+      required: true,
+    },
 
+    // Exact check-in time
     checkedAt: {
       type: Date,
       default: Date.now,
@@ -35,6 +47,18 @@ const checkInSchema = new mongoose.Schema(
   }
 );
 
-const CheckIn= mongoose.model("CheckIn", checkInSchema);
+// One device can check in only once per day for a particular app
+checkInSchema.index(
+  {
+    app: 1,
+    deviceId: 1,
+    checkInDate: 1,
+  },
+  {
+    unique: true,
+  }
+);
+
+const CheckIn = mongoose.model("CheckIn", checkInSchema);
 
 export default CheckIn;

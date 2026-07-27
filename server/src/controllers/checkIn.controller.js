@@ -5,17 +5,15 @@ import App from "../models/app.models.js";
 // Create Check-In
 export const createCheckIn = async (req, res) => {
   try {
-  
     const {
       appId,
       deviceId,
       platform,
       deviceName,
       osVersion,
-      timezone,
-      ipAddress,
     } = req.body;
 
+    // Check App
     const app = await App.findById(appId);
 
     if (!app) {
@@ -25,19 +23,16 @@ export const createCheckIn = async (req, res) => {
       });
     }
 
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    // Get today's date in IST
+    const checkInDate = new Date().toLocaleDateString("en-CA", {
+      timeZone: "Asia/Kolkata",
+    });
 
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
-
+    // Check if already checked in today
     const alreadyCheckedIn = await CheckIn.findOne({
       app: appId,
       deviceId,
-      checkedAt: {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      },
+      checkInDate,
     });
 
     if (alreadyCheckedIn) {
@@ -47,13 +42,14 @@ export const createCheckIn = async (req, res) => {
       });
     }
 
+    // Create Check-In
     const checkIn = await CheckIn.create({
       app: appId,
       deviceId,
       platform,
       deviceName,
       osVersion,
-      timezone,
+      checkInDate,
     });
 
     res.status(201).json({
@@ -61,7 +57,17 @@ export const createCheckIn = async (req, res) => {
       message: "Check-In successful.",
       data: checkIn,
     });
+
   } catch (error) {
+
+    // Handle duplicate index error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Device already checked in today.",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
