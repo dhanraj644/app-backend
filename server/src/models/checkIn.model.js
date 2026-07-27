@@ -14,6 +14,12 @@ const checkInSchema = new mongoose.Schema(
       trim: true,
     },
 
+    testerName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     platform: {
       type: String,
       enum: ["Android", "iOS"],

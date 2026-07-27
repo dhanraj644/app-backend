@@ -11,6 +11,7 @@ export const createCheckIn = async (req, res) => {
       platform,
       deviceName,
       osVersion,
+      testerName,
     } = req.body;
 
     // Check App
@@ -46,6 +47,7 @@ export const createCheckIn = async (req, res) => {
     const checkIn = await CheckIn.create({
       app: appId,
       deviceId,
+      testerName,
       platform,
       deviceName,
       osVersion,
