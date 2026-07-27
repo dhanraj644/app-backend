@@ -36,14 +36,9 @@ const checkInSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Exact check-in time
-    checkedAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
