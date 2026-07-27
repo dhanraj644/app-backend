@@ -6,7 +6,6 @@ const appSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      uppercase: true,
       trim: true,
     },
 
@@ -14,6 +13,7 @@ const appSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
 
     isActive: {

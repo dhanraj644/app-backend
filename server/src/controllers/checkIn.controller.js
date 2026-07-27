@@ -54,7 +54,6 @@ export const createCheckIn = async (req, res) => {
       deviceName,
       osVersion,
       timezone,
-      ipAddress,
     });
 
     res.status(201).json({

@@ -1,11 +1,12 @@
 import App from "../models/app.models.js";
+import CheckIn from "../models/checkIn.model.js";
 
 
 export const createApp = async (req, res) => {
   try {
     const { appName, appCode } = req.body;
 
-      console.log({ appCode, appName })
+
     const appExists = await App.findOne({ appCode });
 
     if (appExists) {
@@ -142,6 +143,11 @@ export const deleteApp = async (req, res) => {
         message: "App not found.",
       });
     }
+
+
+    await CheckIn.deleteMany({
+      app: req.params.id,
+    });
 
     await app.deleteOne();
 

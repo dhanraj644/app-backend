@@ -13,7 +13,6 @@ export const createAppValidator = Joi.object({
 
   appCode: Joi.string()
     .trim()
-    .uppercase()
     .min(3)
     .max(30)
     .required(),
@@ -26,7 +25,6 @@ export const updateAppValidator = Joi.object({
 
   appCode: Joi.string()
     .trim()
-    .uppercase()
     .min(3)
     .max(30),
     
