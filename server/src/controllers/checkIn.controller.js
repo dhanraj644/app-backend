@@ -25,12 +25,18 @@ export const createCheckIn = async (req, res) => {
       });
     }
 
+    console.log("========== CHECK-IN ==========");
+console.log("Current Time:", new Date
+            
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
+console.log("Start Of Day:", startOfDay);
+console.log("End Of Day:", endOfDay);
+    
     const alreadyCheckedIn = await CheckIn.findOne({
       app: appId,
       deviceId,
