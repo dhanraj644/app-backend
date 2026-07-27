@@ -14,6 +14,12 @@ export const createCheckIn = async (req, res) => {
       testerName,
     } = req.body;
 
+    console.log({appId,
+      deviceId,
+      platform,
+      deviceName,
+      osVersion,
+      testerName,})
     // Check App
     const app = await App.findById(appId);
 
