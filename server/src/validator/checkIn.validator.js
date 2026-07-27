@@ -20,11 +20,13 @@ export const createCheckInValidator = Joi.object({
 
   deviceName: Joi.string().trim().required(),
 
+  testerName: Joi.string().trim().required(),
+
+
   osVersion: Joi.string().trim().required(),
 
   timezone: Joi.string().trim().required(),
 
-  ipAddress: Joi.string().ip().optional(),
 });
 
 export const checkInIdValidator = Joi.object({
