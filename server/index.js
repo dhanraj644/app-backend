@@ -10,7 +10,9 @@ const serverStart = async () => {
     
     try {
         
-        await dbConeection();
+          console.log("Connecting to MongoDB...");
+          await dbConeection();
+          console.log("MongoDB connected.");
 
         app.listen(PORT,()=>{
 
