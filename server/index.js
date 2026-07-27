@@ -1,7 +1,11 @@
 import dbConeection from "./src/config/db.js";
 import app from "./src/app.js";
+import dotenv from "dotenv";
 
-const PORT=5000;
+dotenv.config();
+
+
+const PORT= process.env.PORT||5000;
 const serverStart = async () => {
     
     try {

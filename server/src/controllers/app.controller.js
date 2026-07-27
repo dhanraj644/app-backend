@@ -1,10 +1,11 @@
-import App from "../models/app.model.js";
+import App from "../models/app.models.js";
 
 
 export const createApp = async (req, res) => {
   try {
-    const { appCode, appName } = req.body;
+    const { appName, appCode } = req.body;
 
+      console.log({ appCode, appName })
     const appExists = await App.findOne({ appCode });
 
     if (appExists) {
@@ -20,6 +21,7 @@ export const createApp = async (req, res) => {
     });
 
     return res.status(201).json({
+      statusCode:201,
       success: true,
       message: "App created successfully.",
       data: app,
@@ -28,6 +30,7 @@ export const createApp = async (req, res) => {
     console.error("Create App Error:", error);
 
     return res.status(500).json({
+      statusCode:500,
       success: false,
       message: "Internal Server Error.",
     });
@@ -41,6 +44,7 @@ export const getApps = async (req, res) => {
     const apps = await App.find().sort({ createdAt: -1 });
 
     return res.status(200).json({
+      statusCode:200,
       success: true,
       count: apps.length,
       data: apps,
@@ -49,6 +53,7 @@ export const getApps = async (req, res) => {
     console.error("Get Apps Error:", error);
 
     return res.status(500).json({
+      statusCode:500,
       success: false,
       message: "Internal Server Error.",
     });
@@ -64,6 +69,7 @@ export const getAppById = async (req, res) => {
 
     if (!app) {
       return res.status(404).json({
+        statusCode:404,
         success: false,
         message: "App not found.",
       });
@@ -77,6 +83,7 @@ export const getAppById = async (req, res) => {
     console.error("Get App Error:", error);
 
     return res.status(500).json({
+      statusCode:500,
       success: false,
       message: "Internal Server Error.",
     });
@@ -98,12 +105,14 @@ export const updateApp = async (req, res) => {
 
     if (!app) {
       return res.status(404).json({
+       statusCode:404,
         success: false,
         message: "App not found.",
       });
     }
 
     return res.status(200).json({
+      statusCode:200,
       success: true,
       message: "App updated successfully.",
       data: app,
@@ -112,6 +121,7 @@ export const updateApp = async (req, res) => {
     console.error("Update App Error:", error);
 
     return res.status(500).json({
+      statusCode:500,
       success: false,
       message: "Internal Server Error.",
     });
@@ -121,24 +131,22 @@ export const updateApp = async (req, res) => {
 
 export const deleteApp = async (req, res) => {
   try {
-    const app = await App.findByIdAndUpdate(
+    const app = await App.findById(
       req.params.id,
-      {
-        isActive: false,
-      },
-      {
-        new: true,
-      }
     );
 
     if (!app) {
       return res.status(404).json({
+        statusCode:404,
         success: false,
         message: "App not found.",
       });
     }
 
+    await app.deleteOne();
+
     return res.status(200).json({
+      statusCode:200,
       success: true,
       message: "App deleted successfully.",
     });
@@ -146,6 +154,7 @@ export const deleteApp = async (req, res) => {
     console.error("Delete App Error:", error);
 
     return res.status(500).json({
+      statusCode:500,
       success: false,
       message: "Internal Server Error.",
     });

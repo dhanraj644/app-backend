@@ -7,16 +7,24 @@ import {
   deleteApp,
 } from "../controllers/app.controller.js";
 
+import validate from "../middleware/validate.js";
+
+import {
+  createAppValidator,
+  updateAppValidator,
+  appIdValidator,
+} from "../validator/app.validator.js";
+
 const router = express.Router();
 
-router.post("/", createApp);
+router.post("/",validate(createAppValidator), createApp);
 
 router.get("/", getApps);
 
-router.get("/:id", getAppById);
+router.get("/:id", validate(appIdValidator, "params"), getAppById);
 
-router.put("/:id", updateApp);
+router.put("/:id",  validate(appIdValidator, "params"), validate(updateAppValidator), updateApp);
 
-router.delete("/:id", deleteApp);
+router.delete("/:id", validate(appIdValidator, "params"), deleteApp);
 
 export default router;

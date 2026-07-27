@@ -35,4 +35,6 @@ const checkInSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("CheckIn", checkInSchema);
+const CheckIn= mongoose.model("CheckIn", checkInSchema);
+
+export default CheckIn;

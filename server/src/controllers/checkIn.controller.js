@@ -1,22 +1,22 @@
-import App from "../models/app.model.js";
 import CheckIn from "../models/checkIn.model.js";
+import App from "../models/app.models.js";
 
+
+// Create Check-In
 export const createCheckIn = async (req, res) => {
   try {
+  
     const {
-      appCode,
+      appId,
       deviceId,
       platform,
       deviceName,
       osVersion,
       timezone,
+      ipAddress,
     } = req.body;
 
-    // Find app by appCode
-    const app = await App.findOne({
-      appCode,
-      isActive: true,
-    });
+    const app = await App.findById(appId);
 
     if (!app) {
       return res.status(404).json({
@@ -25,16 +25,14 @@ export const createCheckIn = async (req, res) => {
       });
     }
 
-    // Today's date range
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Check if already checked in today
-    const existingCheckIn = await CheckIn.findOne({
-      app: app._id,
+    const alreadyCheckedIn = await CheckIn.findOne({
+      app: appId,
       deviceId,
       checkedAt: {
         $gte: startOfDay,
@@ -42,36 +40,153 @@ export const createCheckIn = async (req, res) => {
       },
     });
 
-    if (existingCheckIn) {
-      return res.status(409).json({
+    if (alreadyCheckedIn) {
+      return res.status(400).json({
         success: false,
-        message: "Already checked in today.",
+        message: "Device already checked in today.",
       });
     }
 
-    // Create check-in
     const checkIn = await CheckIn.create({
-      app: app._id,
+      app: appId,
       deviceId,
       platform,
       deviceName,
       osVersion,
       timezone,
-      ipAddress: req.ip,
+      ipAddress,
     });
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "Check-in successful.",
+      message: "Check-In successful.",
       data: checkIn,
     });
-
   } catch (error) {
-    console.error("Create Check-In Error:", error);
-
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Internal Server Error.",
+      message: error.message,
+    });
+  }
+};
+
+// Get All Check-Ins
+export const getCheckIns = async (req, res) => {
+  try {
+
+    const checkIns = await CheckIn.find()
+      .populate("app", "appName appCode")
+      .sort({ checkedAt: -1 })
+
+    res.status(200).json({
+      success: true,
+      data: checkIns,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Get Check-In By Id
+export const getCheckInById = async (req, res) => {
+  try {
+    const checkIn = await CheckIn.findById(req.params.id).populate(
+      "app",
+      "appName appCode"
+    );
+
+    if (!checkIn) {
+      return res.status(404).json({
+        success: false,
+        message: "Check-In not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: checkIn,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Get Check-Ins By App
+export const getCheckInsByApp = async (req, res) => {
+  try {
+    const { appId } = req.params;
+    const {
+      deviceId,
+      from,
+      to,
+    } = req.query;
+
+    const filter = {
+      app: appId,
+    };
+
+    if (deviceId) {
+      filter.deviceId = {
+        $regex: deviceId,
+        $options: "i",
+      };
+    }
+
+    if (from || to) {
+      filter.checkedAt = {};
+
+      if (from) {
+        filter.checkedAt.$gte = new Date(from);
+      }
+
+      if (to) {
+        filter.checkedAt.$lte = new Date(to);
+      }
+    }
+
+    const checkIns = await CheckIn.find(filter)
+      .sort({ checkedAt: -1 })
+
+    res.status(200).json({
+      success: true,
+      data: checkIns,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Delete Check-In
+export const deleteCheckIn = async (req, res) => {
+  try {
+    const checkIn = await CheckIn.findById(req.params.id);
+
+    if (!checkIn) {
+      return res.status(404).json({
+        success: false,
+        message: "Check-In not found.",
+      });
+    }
+
+    await checkIn.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Check-In deleted successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
