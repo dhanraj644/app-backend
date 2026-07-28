@@ -14,12 +14,6 @@ export const createCheckIn = async (req, res) => {
       testerName,
     } = req.body;
 
-    console.log({appId,
-      deviceId,
-      platform,
-      deviceName,
-      osVersion,
-      testerName,})
     // Check App
     const app = await App.findById(appId);
 
@@ -89,7 +83,7 @@ export const getCheckIns = async (req, res) => {
 
     const checkIns = await CheckIn.find()
       .populate("app", "appName appCode")
-      .sort({ checkedAt: -1 })
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -106,6 +100,8 @@ export const getCheckIns = async (req, res) => {
 // Get Check-In By Id
 export const getCheckInById = async (req, res) => {
   try {
+    console.log("hello");
+
     const checkIn = await CheckIn.findById(req.params.id).populate(
       "app",
       "appName appCode"
@@ -134,16 +130,14 @@ export const getCheckInById = async (req, res) => {
 export const getCheckInsByApp = async (req, res) => {
   try {
     const { appId } = req.params;
-    const {
-      deviceId,
-      from,
-      to,
-    } = req.query;
+    const { deviceId, from, to } = req.query;
 
+    console.log({ deviceId, from, to })
     const filter = {
       app: appId,
     };
 
+    // Search by Device ID
     if (deviceId) {
       filter.deviceId = {
         $regex: deviceId,
@@ -151,29 +145,35 @@ export const getCheckInsByApp = async (req, res) => {
       };
     }
 
+    // Filter by Check-In Date
     if (from || to) {
-      filter.checkedAt = {};
+      filter.checkInDate = {};
 
       if (from) {
-        filter.checkedAt.$gte = new Date(from);
+        filter.checkInDate.$gte = from;
       }
 
       if (to) {
-        filter.checkedAt.$lte = new Date(to);
+        filter.checkInDate.$lte = to;
       }
     }
 
     const checkIns = await CheckIn.find(filter)
-      .sort({ checkedAt: -1 })
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
+      count: checkIns.length,
       data: checkIns,
     });
+
   } catch (error) {
+
+    console.error("Get Check-Ins Error:", error);
+
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server Error",
     });
   }
 };

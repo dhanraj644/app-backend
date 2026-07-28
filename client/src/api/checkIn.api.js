@@ -1,18 +1,21 @@
 import api from "./axios";
 
-// Create Check-In (Mobile App)
-export const createCheckIn = async (data) => {
-  return await api.post("/check-ins", data);
+// Create Check-In
+export const createCheckIn = (data) => {
+  return api.post("/check-ins", data);
 };
 
-// Get All Check-Ins By App
-export const getCheckInsByApp = async (appId) => {
-  return await api.get(`/check-ins/${appId}`);
+// Get All Check-Ins (with optional query filters: deviceId, appId, from, to)
+export const getCheckIns = (params = {}) => {
+  return api.get("/check-ins", { params });
 };
 
-// Filter Check-Ins By Date
-export const filterCheckIns = async (appId, from, to) => {
-  return await api.get(
-    `/check-ins/${appId}?from=${from}&to=${to}`
-  );
+// Get Check-Ins By App
+export const getCheckInsByApp = (appId, params = {}) => {
+  return api.get(`/check-ins/app/${appId}`, { params });
+};
+
+// Delete Check-In
+export const deleteCheckIn = (id) => {
+  return api.delete(`/check-ins/${id}`);
 };

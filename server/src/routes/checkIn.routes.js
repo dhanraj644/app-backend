@@ -28,6 +28,11 @@ router.post(
 
 
 router.get(
+  "/app/:appId",
+  getCheckInsByApp
+);
+
+router.get(
   "/",
   getCheckIns
 );
@@ -39,11 +44,6 @@ router.get(
   getCheckInById
 );
 
-
-router.get(
-  "/app/:appId",
-  getCheckInsByApp
-);
 
 
 router.delete(
