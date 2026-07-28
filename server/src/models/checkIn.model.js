@@ -42,6 +42,11 @@ const checkInSchema = new mongoose.Schema(
       required: true,
     },
 
+     createdAt: { 
+       type: Date,
+       default: Date.now,
+  
+       }
     createdAt: { 
        type: Date,
        default: Date.now,
@@ -50,7 +55,7 @@ const checkInSchema = new mongoose.Schema(
 
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
