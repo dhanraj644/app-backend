@@ -42,9 +42,15 @@ const checkInSchema = new mongoose.Schema(
       required: true,
     },
 
+     createdAt: { 
+       type: Date,
+       default: Date.now,
+  
+       }
   },
   {
-    timestamps: false,
+    timestamps: true,
+    
   }
 );
 
